@@ -7,7 +7,7 @@
 #include <linux/kthread.h>
 
 #define COUNT 10 // node 100 개
-void test_insert_and_search(void);
+int test_insert_and_search(void* data);
 void test_delete(void);
 
 struct task_struct* writer_thread1, * writer_thread2, * writer_thread3, * writer_thread4;
@@ -42,7 +42,7 @@ module_init(mod_init);
 module_exit(mod_cleanup);
 MODULE_LICENSE("GPL");
 
-void test_insert_and_search(void)
+int test_insert_and_search(void* data)
 {
 	
 	int i;
@@ -65,7 +65,7 @@ void test_insert_and_search(void)
 				//printk("current node->data: %d \n", current_node->data);
 				struct my_node *new = kmalloc(sizeof(struct my_node), GFP_KERNEL);
 				new->data = i*1000;
-				list_add(&new->list, &(*current_node->list));
+				list_add(&new->list, &(current_node->list));
 			}
 		}
 	}	
@@ -75,6 +75,7 @@ void test_insert_and_search(void)
 		printk("current node-> data : %d \n", current_node->data);
 	
 	}
+	return 0;
 }
 
 void test_delete(void){

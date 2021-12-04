@@ -17,7 +17,8 @@
 *.ko
 *.so
 *.so.dbg
-*.mod.c
+*.mod.*
+*.mod
 *.i
 *.lst
 *.symtypes
