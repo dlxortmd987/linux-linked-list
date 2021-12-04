@@ -25,7 +25,7 @@ struct my_node *current_node = NULL;
 struct my_node *tmp = NULL;
 
 int __init mod_init(void){
-	INIT_GCLIST_HEAD(&my_list); // initialize list head
+	INIT_WLIST_HEAD(&my_list); // initialize list head
 	int i;
 
 	/*먼저 100개 노드를 insert해 둔다. */
@@ -77,10 +77,10 @@ int test_insert_and_search(void* data)
 
 void test_delete(void){
 	
-	gclist_for_each_entry_safe(current_node, tmp, &my_list, head){
+	wlist_for_each_entry_safe(current_node, tmp, &my_list, head){
 		if (current_node->data == 2){
 			printk("current node value :%d \n", current_node->data);
-			gclist_del(&current_node->list);
+			wlist_del(&current_node->list);
 			kfree(current_node);
 		}
 	}
