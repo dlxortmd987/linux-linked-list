@@ -4,7 +4,7 @@
 
 #include <linux/container_of.h>
 #include <linux/types.h>
-#include "gctype.h"
+#include "gctypes.h"
 #include <linux/stddef.h>
 #include <linux/poison.h>
 #include <linux/const.h>
