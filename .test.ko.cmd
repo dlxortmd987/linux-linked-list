@@ -1,1 +1,0 @@
-cmd_/home/lee/linux_practice/linux-linked-list/test.ko := ld -r -m elf_x86_64  -z max-page-size=0x200000  --build-id  -T ./scripts/module-common.lds -o /home/lee/linux_practice/linux-linked-list/test.ko /home/lee/linux_practice/linux-linked-list/test.o /home/lee/linux_practice/linux-linked-list/test.mod.o;  true
