@@ -41,8 +41,9 @@ static inline void wlist_del(struct wlist_head *entry)
 // 	     pos = n, n = list_next_entry(n, member))
 
 //search
-#define wlist_for_each_entry_safe(pos, n, whead, member)    \
-    for (pos = container_of(list_first_entry((whead)->head, typeof(*((pos)->whead)), member), typeof(*pos), whead), \
-            n = container_of(list_next_entry((pos)->whead, member), typeof(*n), whead);			\
-            !list_entry_is_head(pos->whead, whead->head, member); 			\
-            pos = n, n = container_of(list_next_entry(n->whead, member), typeof(*n), whead))
+// whead_ptr: wlist_head *
+#define wlist_for_each_entry_safe(pos, n, whead_ptr, member)    \
+    for (pos = container_of(list_first_entry((whead_ptr)->head, typeof((pos)->whead), member), typeof(*pos), whead_ptr), \
+            n = container_of(list_next_entry((pos)->whead, member), typeof(*n), whead_ptr);			\
+            !list_entry_is_head(pos->whead, (whead_ptr)->head, member); 			\
+            pos = n, n = container_of(list_next_entry(n->whead, member), typeof(*n), whead_ptr))

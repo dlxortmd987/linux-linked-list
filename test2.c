@@ -56,7 +56,7 @@ int test_insert_and_search(void* data)
 	
 	int i;
 	for (i = 0; i < COUNT; i++){
-		wlist_for_each_entry_safe(current_node,tmp, my_list, head ){
+		wlist_for_each_entry_safe(current_node,tmp, &my_list, head ){
 			if(current_node->data == i){
 				//printk("current node->data: %d \n", current_node->data);
 				struct my_node *new = kmalloc(sizeof(struct my_node), GFP_KERNEL);
