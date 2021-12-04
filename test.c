@@ -50,21 +50,22 @@ void test_insert_and_search(void)
 	// search 
 	
 	i = 0;
-	list_for_each_entry_safe(current_node,tmp, &my_list, list ){
-		i+= 2;
-		printk("current node->data: %d \n", current_node->data);
-		struct my_node *new = kmalloc(sizeof(struct my_node), GFP_KERNEL);
-		new->data = i;
-		list_add(&new->list, &my_list);
-	}
-
+	for (i = 0; i < COUNT; i++){
+		list_for_each_entry_safe(current_node,tmp, &my_list, list ){
+			if(current_node->data == i){
+				//printk("current node->data: %d \n", current_node->data);
+				struct my_node *new = kmalloc(sizeof(struct my_node), GFP_KERNEL);
+				new->data = i*1000;
+				list_add(&new->list, &my_list);
+			}
+		}
+	}	
 	// 잘 삽입되었는지 확인
 	printk("================result=================\n");
 	list_for_each_entry_safe(current_node, tmp, &my_list, list){
 		printk("current node-> data : %d \n", current_node->data);
 	
 	}
-
 }
 
 void test_delete(void){
