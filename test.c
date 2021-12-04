@@ -4,10 +4,13 @@
 #include <linux/list.h> // gclist.h
 #include <linux/slab.h>
 #include <linux/ktime.h>
+#include <linux/kthread.h>
 
 #define COUNT 10 // node 100 개
 void test_insert_and_search(void);
 void test_delete(void);
+
+struct task_struct* writer_thread1, * writer_thread2, * writer_thread3, * writer_thread4;
 
 struct my_node {
 	struct list_head list;
@@ -19,13 +22,19 @@ struct list_head my_list; //head
 	struct my_node *tmp = NULL;
 
 int __init mod_init(void){
-	test_insert_and_search();
-	test_delete();
+	writer_thread1 = kthread_run(test_insert_and_search, NULL, "test_insert_and_search");
+	writer_thread2 = kthread_run(test_insert_and_search, NULL, "test_insert_and_search");
+	writer_thread3 = kthread_run(test_insert_and_search, NULL, "test_insert_and_search");
+	writer_thread4 = kthread_run(test_insert_and_search, NULL, "test_insert_and_search");
 	printk("hello module! \n");
 	return 0;
 }
 
 void __exit mod_cleanup(void) {
+	kthread_stop(writer_thread1);
+	kthread_stop(writer_thread2);
+	kthread_stop(writer_thread3);
+	kthread_stop(writer_thread4);
 	printk("bye module \n");
 }
 
