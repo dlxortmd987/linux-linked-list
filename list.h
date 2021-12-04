@@ -55,6 +55,22 @@ static inline bool __list_del_entry_valid(struct list_head *entry)
 {
 	return true;
 }
+
+static inline bool __gclist_add_flag_vaild(struct gclist_head *new,
+				struct gclist_head *prev,
+				struct gclist_head *next)
+{
+    if(prev == true) {
+	    return true;
+    }
+    else {
+        return false;
+    }
+}
+static inline bool __list_del_entry_valid(struct gclist_head *entry)
+{
+	return true;
+}
 #endif
 
 
@@ -65,11 +81,14 @@ static inline bool __list_del_entry_valid(struct list_head *entry)
  * This is only for internal list manipulation where we know
  * the prev/next entries already!
  */
-static inline void __list_add(struct list_head *new,
+static inline void __gclist_add(struct list_head *new,
 			      struct list_head *prev,
 			      struct list_head *next)
 {
 	if (!__list_add_valid(new, prev, next))
+		return;
+
+    if (!__gclist_add_flag_vaild(new, prev, next))
 		return;
 
 	next->prev = new;
@@ -624,6 +643,7 @@ static inline void list_splice_tail_init(struct list_head *list,
 #define list_entry_is_head(pos, head, member)				\
 	(&pos->member == (head))
 
+//바꿀 부분
 /**
  * list_for_each_entry	-	iterate over list of given type
  * @pos:	the type * to use as a loop cursor.

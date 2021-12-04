@@ -1,4 +1,5 @@
 struct gclist_head {
+    bool flag;
 	struct gclist_head *next, *prev;
 };
 
