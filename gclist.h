@@ -8,6 +8,7 @@
 #include <linux/stddef.h>
 #include <linux/poison.h>
 #include <linux/const.h>
+#include <linux/delay.h>
 
 #include <asm/barrier.h>
 
@@ -39,7 +40,7 @@ static inline void INIT_GCLIST_HEAD(struct gclist_head *gclist)
 	gclist->prev = gclist;
 }
 
-#ifdef CONFIG_DEBUG_gclist
+#ifdef CONFIG_DEBUG_GCLIST
 extern bool __gclist_add_valid(struct gclist_head *new,
 			      struct gclist_head *prev,
 			      struct gclist_head *next);
@@ -56,16 +57,15 @@ static inline bool __gclist_del_entry_valid(struct gclist_head *entry)
 	return true;
 }
 
-static inline bool __gclist_add_flag_vaild(struct gclist_head *new,
+static inline bool __gclist_add_flag_vaild(
 				struct gclist_head *prev,
 				struct gclist_head *next)
 {
-    if(prev == true) {
-	    return true;
-    }
-    else {
-        return false;
-    }
+    if(prev->flag || next->flag) {
+		return false;
+	} else {
+		return true;
+	}
 }
 static inline bool __gclist_del_entry_valid(struct gclist_head *entry)
 {
@@ -87,11 +87,20 @@ static inline void __gclist_add(struct gclist_head *new,
 {
 	if (!__gclist_add_valid(new, prev, next))
 		return;
-
+	
+	// check flag
+	while (!__gclist_add_flag_vaild(prev, next))
+	{
+		msleep(1);
+	}
+	__sync_lock_test_and_set(&(prev->flag), true);
+	__sync_lock_test_and_set(&(next->flag), true);
 	next->prev = new;
 	new->next = next;
 	new->prev = prev;
 	WRITE_ONCE(prev->next, new);
+	__sync_lock_test_and_set(&(prev->flag), false);
+	__sync_lock_test_and_set(&(next->flag), false);
 }
 /**
  * gclist_add - add a new entry
@@ -808,10 +817,10 @@ static inline void gclist_splice_tail_init(struct gclist_head *gclist,
  * You lose the ability to access the tail in O(1).
  */
 
-#define Hgclist_HEAD_INIT { .first = NULL }
-#define Hgclist_HEAD(name) struct hgclist_head name = {  .first = NULL }
-#define INIT_Hgclist_HEAD(ptr) ((ptr)->first = NULL)
-static inline void INIT_Hgclist_NODE(struct hgclist_node *h)
+#define HGCLIST_HEAD_INIT { .first = NULL }
+#define HGCLIST_HEAD(name) struct hgclist_head name = {  .first = NULL }
+#define INIT_HGCLIST_HEAD(ptr) ((ptr)->first = NULL)
+static inline void INIT_HGCLIST_NODE(struct hgclist_node *h)
 {
 	h->next = NULL;
 	h->pprev = NULL;
