@@ -5,6 +5,7 @@
 #include <linux/slab.h>
 #include <linux/ktime.h>
 #include <linux/kthread.h>
+#include <linux/delay.h>
 #include "gclist.h"
 
 
@@ -24,6 +25,16 @@ struct gclist_head my_list; //head
 	struct my_node *tmp = NULL;
 
 int __init mod_init(void){
+	INIT_GCLIST_HEAD(&my_list); // initialize list head
+	int i;
+
+	/*먼저 100개 노드를 insert해 둔다. */
+	
+	for (i = 0; i < COUNT; i++){
+		struct my_node *new = kmalloc(sizeof(struct my_node),GFP_KERNEL);
+		new->data = i;
+		gclist_add(&new->list, &my_list);
+	}	
 	writer_thread1 = kthread_run(test_insert_and_search, NULL, "test_insert_and_search");
 	writer_thread2 = kthread_run(test_insert_and_search, NULL, "test_insert_and_search");
 	writer_thread3 = kthread_run(test_insert_and_search, NULL, "test_insert_and_search");
@@ -47,20 +58,10 @@ MODULE_LICENSE("GPL");
 int test_insert_and_search(void* data)
 {
 	
-	int i;
-
-	INIT_GCLIST_HEAD(&my_list); // initialize list head
-	/*먼저 100개 노드를 insert해 둔다. */
-	
-	for (i = 0; i < COUNT; i++){
-		struct my_node *new = kmalloc(sizeof(struct my_node),GFP_KERNEL);
-		new->data = i;
-		gclist_add(&new->list, &my_list);
-	}	
 
 	// search 
 	
-	i = 0;
+	int i = 0;
 	for (i = 0; i < COUNT; i++){
 		gclist_for_each_entry_safe(current_node,tmp, &my_list, list ){
 			if(current_node->data == i){
@@ -71,6 +72,7 @@ int test_insert_and_search(void* data)
 			}
 		}
 	}	
+	ssleep(1);
 	// 잘 삽입되었는지 확인
 	printk("================result=================\n");
 	gclist_for_each_entry_safe(current_node, tmp, &my_list, list){
@@ -85,7 +87,7 @@ void test_delete(void){
 	gclist_for_each_entry_safe(current_node, tmp, &my_list, list){
 		if (current_node->data == 2){
 			printk("current node value :%d \n", current_node->data);
-			list_del(&current_node->list);
+			gclist_del(&current_node->list);
 			kfree(current_node);
 		}
 	}

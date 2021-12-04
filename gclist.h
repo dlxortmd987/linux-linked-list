@@ -1,7 +1,7 @@
 #ifndef _LINUX_GCLIST_H
 #define _LINUX_GCLIST_H
 
-#include <stdio.h>
+// #include <stdio.h>
 #include <linux/delay.h>
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
