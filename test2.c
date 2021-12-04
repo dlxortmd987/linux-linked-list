@@ -33,7 +33,7 @@ int __init mod_init(void){
 	for (i = 0; i < COUNT; i++){
 		struct my_node *new = kmalloc(sizeof(struct my_node),GFP_KERNEL);
 		new->data = i;
-		wlist_add(&new->head, &my_list);
+		wlist_add(&new->whead, &my_list);
 	}	
 	writer_thread1 = kthread_run(test_insert_and_search, NULL, "test_insert_and_search");
 	writer_thread2 = kthread_run(test_insert_and_search, NULL, "test_insert_and_search");
@@ -56,12 +56,12 @@ int test_insert_and_search(void* data)
 	
 	int i;
 	for (i = 0; i < COUNT; i++){
-		wlist_for_each_entry_safe(current_node,tmp, &my_list, head ){
+		wlist_for_each_entry_safe(current_node,tmp, my_list, head ){
 			if(current_node->data == i){
 				//printk("current node->data: %d \n", current_node->data);
 				struct my_node *new = kmalloc(sizeof(struct my_node), GFP_KERNEL);
 				new->data = i*1000;
-				wlist_add(&new->head, &(current_node->head));
+				wlist_add(&new->whead, &(current_node->whead));
 			}
 		}
 	}	
@@ -80,7 +80,7 @@ void test_delete(void){
 	wlist_for_each_entry_safe(current_node, tmp, &my_list, head){
 		if (current_node->data == 2){
 			printk("current node value :%d \n", current_node->data);
-			wlist_del(&current_node->list);
+			wlist_del(&current_node->whead);
 			kfree(current_node);
 		}
 	}
