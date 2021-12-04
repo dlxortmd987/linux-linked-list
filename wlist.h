@@ -28,10 +28,10 @@ static inline void wlist_del(struct wlist_head *entry)
 	entry->head.next = WLIST_POISON1;
 	entry->head.prev = WLIST_POISON2;
 }
-
+.
 //search
-#define wlist_for_each_entry_safe(pos, n, wlist, member)
-    for ((pos)->whead = list_first_entry((wlist)->head, typeof(*((pos)->whead)), member),	
-            (n)->whead = list_next_entry((pos)->whead, member);			\
-            !list_entry_is_head(pos->whead, wlist->head, member); 			\
-            (pos)->whead = (n)->whead, (n)-> = list_next_entry(n->whead, member), (pos)->data = (n)->data)
+#define wlist_for_each_entry_safe(pos, n, whead, member)
+    for (pos = list_first_entry((whead)->head, typeof(*pos), member),	
+            n = list_next_entry(pos, member);			\
+            !list_entry_is_head(pos, whead->head, member); 			\
+            pos = n, n = list_next_entry(n, member))
