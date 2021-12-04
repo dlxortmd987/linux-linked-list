@@ -56,7 +56,7 @@ void test_insert_and_search(void)
 				//printk("current node->data: %d \n", current_node->data);
 				struct my_node *new = kmalloc(sizeof(struct my_node), GFP_KERNEL);
 				new->data = i*1000;
-				list_add(&new->list, &(current_node->list));
+				list_add(&new->list, &(*current_node->list));
 			}
 		}
 	}	
