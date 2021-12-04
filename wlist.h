@@ -28,7 +28,12 @@ static inline void wlist_del(struct wlist_head *entry)
 	entry->head.next = WLIST_POISON1;
 	entry->head.prev = WLIST_POISON2;
 }
-.
+
+#define offsetof(s,m)   (size_t)&(((s *)0)->m)
+
+#define container_of(ptr, type, member) \
+  ((type *) ((char *) (ptr) - offsetof(type, member)))
+
 //search
 #define wlist_for_each_entry_safe(pos, n, whead, member)
     for (pos = list_first_entry((whead)->head, typeof(*pos), member),	
