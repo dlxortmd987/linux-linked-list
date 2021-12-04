@@ -5,6 +5,8 @@
 #include <linux/slab.h>
 #include <linux/ktime.h>
 #include <linux/kthread.h>
+#include "gclist.h"
+
 
 #define COUNT 10 // node 100 개
 int test_insert_and_search(void* data);
@@ -13,11 +15,11 @@ void test_delete(void);
 struct task_struct* writer_thread1, * writer_thread2, * writer_thread3, * writer_thread4;
 
 struct my_node {
-	struct list_head list;
+	struct gclist_head list;
 	int data;
 };
 
-struct list_head my_list; //head
+struct gclist_head my_list; //head
 	struct my_node *current_node = NULL;
 	struct my_node *tmp = NULL;
 
@@ -47,31 +49,31 @@ int test_insert_and_search(void* data)
 	
 	int i;
 
-	INIT_LIST_HEAD(&my_list); // initialize list head
+	INIT_GCLIST_HEAD(&my_list); // initialize list head
 	/*먼저 100개 노드를 insert해 둔다. */
 	
 	for (i = 0; i < COUNT; i++){
 		struct my_node *new = kmalloc(sizeof(struct my_node),GFP_KERNEL);
 		new->data = i;
-		list_add(&new->list, &my_list);
+		gclist_add(&new->list, &my_list);
 	}	
 
 	// search 
 	
 	i = 0;
 	for (i = 0; i < COUNT; i++){
-		list_for_each_entry_safe(current_node,tmp, &my_list, list ){
+		gclist_for_each_entry_safe(current_node,tmp, &my_list, list ){
 			if(current_node->data == i){
 				//printk("current node->data: %d \n", current_node->data);
 				struct my_node *new = kmalloc(sizeof(struct my_node), GFP_KERNEL);
 				new->data = i*1000;
-				list_add(&new->list, &(current_node->list));
+				gclist_add(&new->list, &(current_node->list));
 			}
 		}
 	}	
 	// 잘 삽입되었는지 확인
 	printk("================result=================\n");
-	list_for_each_entry_safe(current_node, tmp, &my_list, list){
+	gclist_for_each_entry_safe(current_node, tmp, &my_list, list){
 		printk("current node-> data : %d \n", current_node->data);
 	
 	}
@@ -80,7 +82,7 @@ int test_insert_and_search(void* data)
 
 void test_delete(void){
 	
-	list_for_each_entry_safe(current_node, tmp, &my_list, list){
+	gclist_for_each_entry_safe(current_node, tmp, &my_list, list){
 		if (current_node->data == 2){
 			printk("current node value :%d \n", current_node->data);
 			list_del(&current_node->list);
