@@ -46,7 +46,6 @@ int __init mod_init(void){
 void __exit mod_cleanup(void) {
 	printk("bye module \n");
 }
-my_node->whead->head->next;
 module_init(mod_init);
 module_exit(mod_cleanup);
 MODULE_LICENSE("GPL");
