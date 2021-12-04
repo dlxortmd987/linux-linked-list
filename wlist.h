@@ -31,7 +31,7 @@ static inline void wlist_del(struct wlist_head *entry)
 
 //search
 #define wlist_for_each_entry_safe(pos, n, wlist, member)
-    for ((pos)->whead = list_first_entry((wlist)->head, typeof(*((pos)->whead)), member),	\
+    for ((pos)->whead = list_first_entry((wlist)->head, typeof(*((pos)->whead)), member),	
             (n)->whead = list_next_entry((pos)->whead, member);			\
             !list_entry_is_head(pos->whead, wlist->head, member); 			\
-            (pos)->whead = (n)->whead, (n)-> = list_next_entry(n->whead, member))
+            (pos)->whead = (n)->whead, (n)-> = list_next_entry(n->whead, member), (pos)->data = (n)->data)
