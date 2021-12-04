@@ -44,10 +44,6 @@ int __init mod_init(void){
 }
 
 void __exit mod_cleanup(void) {
-	kthread_stop(writer_thread1);
-	kthread_stop(writer_thread2);
-	kthread_stop(writer_thread3);
-	kthread_stop(writer_thread4);
 	printk("bye module \n");
 }
 
@@ -61,7 +57,7 @@ int test_insert_and_search(void* data)
 
 	// search 
 	
-	int i = 0;
+	int i;
 	for (i = 0; i < COUNT; i++){
 		gclist_for_each_entry_safe(current_node,tmp, &my_list, list ){
 			if(current_node->data == i){
