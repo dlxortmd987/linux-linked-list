@@ -17,7 +17,7 @@
 spinlock_t counter_lock;
 struct timespec64 spclock[2];
 
-#define COUNT 300 // the number of nodes
+#define COUNT 100 // the number of nodes
 
 unsigned long long res_time;
 int cnt = 1;
@@ -41,7 +41,7 @@ unsigned long long calclock3(struct timespec64 *spclock, unsigned long long *tot
 int __init mod_init(void){
 	spin_lock_init(&counter_lock);
 	INIT_WLIST_HEAD(&my_list); // initialize list head
-	printk("modified kernel data structure\n");
+	printk("======modified kernel data structure======\n");
 	
 	test();
 	printk("hello module! \n");

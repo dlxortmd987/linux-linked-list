@@ -14,7 +14,7 @@
 spinlock_t counter_lock;
 struct timespec64 spclock[2];
 
-#define COUNT 300 // the number of nodes
+#define COUNT 100 // the number of nodes
 
 unsigned long long res_time;
 int cnt = 1;
@@ -37,7 +37,7 @@ unsigned long long calclock3(struct timespec64 *spclock, unsigned long long *tot
 int __init mod_init(void){
 	spin_lock_init(&counter_lock);
 	INIT_LIST_HEAD(&my_list); // initialize list head
-	printk("original kernel data structure with spin lock\n");
+	printk("=========original kernel data structure with spin lock=========\n");
 	test();
 	printk("hello module! \n");
 	return 0;
@@ -130,7 +130,7 @@ void test(void)
 	ktime_get_real_ts64(&spclock[1]);
 	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
 	res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
-	printk("select %lld ns\n", res_time);
+	printk("search %lld ns\n", res_time);
 	
 	
 	//delete
