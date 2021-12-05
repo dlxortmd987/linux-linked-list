@@ -9,7 +9,7 @@
 #include "wlist.h"
 
 
-#define COUNT 1000 // node 100 개
+#define COUNT 4000 // node 100 개
 int test_insert_and_search(void* data);
 void test_delete(void);
 
@@ -60,7 +60,7 @@ int test_insert_and_search(void* data)
 		list_for_each_entry_safe(current_node,tmp, &(my_list.head), head ){
 			cnode = container_of(current_node, struct my_node, whead);
 			if(cnode->data == i){
-				printk("current node->data: %d \n", cnode->data);
+				//printk("current node->data: %d \n", cnode->data);
 				struct my_node *new = kmalloc(sizeof(struct my_node), GFP_KERNEL);
 				new->data = i+1000;
 				wlist_add(&new->whead, &(cnode->whead));
@@ -69,10 +69,10 @@ int test_insert_and_search(void* data)
 	}	
 	ssleep(1);
 	// 잘 삽입되었는지 확인
-	
+	printk("done! \n");
 	list_for_each_entry_safe(current_node, tmp, &(my_list.head), head){
 		cnode = container_of(current_node, struct my_node, whead);
-		printk("current node->data: %d \n", cnode->data);
+		//printk("current node->data: %d \n", cnode->data);
 	}
 	return 0;
 }

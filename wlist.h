@@ -27,7 +27,7 @@ static inline void wlist_add(struct wlist_head *new, struct wlist_head *whead)
     	printk("stuck\n");
         msleep(10);
     }
-    printk("no stuck\n");
+    //printk("no stuck\n");
     // false -> 그대로 진행
     // flag 달기 (next, new, prev)
     whead->flag = true;
