@@ -15,10 +15,25 @@ static inline void INIT_WLIST_HEAD(struct wlist_head * wlist){
     INIT_LIST_HEAD(&(wlist->head));
 }
 
+//whead : prev
+//whead->next : next
 //insert
 static inline void wlist_add(struct wlist_head *new, struct wlist_head *whead)
 {
+    // flag true false 인지 확인
+    
+    // true -> msleep
+    while (whead->flag || (container_of(whead->head.next, struct wlist_head, head))->flag) {
+        msleep(10);
+    }
+    // false -> 그대로 진행
+    // flag 달기 (next, new, prev)
+    whead->flag = true;
+    (container_of(whead->head.next, struct wlist_head, head))->flag = true;
     list_add(&(new->head), &(whead->head));
+    whead->flag = false;
+    (container_of(whead->head.next, struct wlist_head, head))->flag = false;
+    
 }
 
 //delete
