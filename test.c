@@ -14,12 +14,12 @@
 spinlock_t counter_lock;
 struct timespec64 spclock[2];
 
-#define COUNT 10 // node 100 개
+#define COUNT 10000 // node 100 개
 
 unsigned long long res_time;
 
-// struct task_struct* writer_thread1, * writer_thread2, * writer_thread3, * writer_thread4;
-struct tast_struct* writer_thread[4];
+struct task_struct* writer_thread1, * writer_thread2, * writer_thread3, * writer_thread4;
+// struct tast_struct* writer_thread[4];
 
 struct my_node {
 	struct list_head list;
@@ -48,10 +48,7 @@ int __init mod_init(void){
 }
 
 void __exit mod_cleanup(void) {
-	int i;
-	for (i = 0; i < 4; i++) {
-		kthread_stop(writer_thread[i])
-	}
+	
 	printk("bye module \n");
 }
 
@@ -70,6 +67,7 @@ int winsert(void* data)
 		new->data = i;
 		list_add(&new->list, &my_list);
 	}	
+	return 0;
 }
 
 int wsearch(void* data)
@@ -85,12 +83,13 @@ int wsearch(void* data)
 				list_add(&new->list, &(current_node->list));
 			}
 		}
+		return 0;
 	}	
 	ssleep(1);
 	// 잘 삽입되었는지 확인
 	printk("================result=================\n");
 	list_for_each_entry_safe(current_node, tmp, &my_list, list){
-		printk("current node-> data : %d \n", current_node->data);
+		// printk("current node-> data : %d \n", current_node->data);
 	
 	}
 	return 0;
@@ -100,7 +99,7 @@ int wdelete(void* data){
 	
 	list_for_each_entry_safe(current_node, tmp, &my_list, list){
 		if (current_node->data == 2){
-			printk("current node value :%d \n", current_node->data);
+			// printk("current node value :%d \n", current_node->data);
 			list_del(&current_node->list);
 			kfree(current_node);
 		}
@@ -119,9 +118,9 @@ void test(void)
 	
 	//insert
 	ktime_get_real_ts64(&spclock[0]);
-	for(i=0; i<3;i++){
-		writer_thread[i] = kthread_run(winsert, NULL, "winsert");
-	}
+	writer_thread1 = kthread_run(winsert, NULL, "winsert");
+	writer_thread2 = kthread_run(winsert, NULL, "winsert");
+	writer_thread3 = kthread_run(winsert, NULL, "winsert");
 	winsert(NULL);
 	ktime_get_real_ts64(&spclock[1]);
 	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
@@ -130,9 +129,10 @@ void test(void)
 	
 	//search
 	ktime_get_real_ts64(&spclock[0]);
-	for(i=0; i<3;i++){
-		writer_thread[i] = kthread_run(wsearch, NULL, "winsert");
-	}
+	
+	writer_thread1 = kthread_run(wsearch, NULL, "wsearch");
+	writer_thread2 = kthread_run(wsearch, NULL, "wsearch");
+	writer_thread3 = kthread_run(wsearch, NULL, "wsearch");
 	wsearch(NULL);
 	ktime_get_real_ts64(&spclock[1]);
 	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
@@ -142,9 +142,9 @@ void test(void)
 	
 	//delete
 	ktime_get_real_ts64(&spclock[0]);
-	for(i=0; i<3;i++){
-		writer_thread[i] = kthread_run(wdelete, NULL, "winsert");
-	}
+	writer_thread1 = kthread_run(wdelete, NULL, "wdelete");
+	writer_thread2 = kthread_run(wdelete, NULL, "wdelete");
+	writer_thread3 = kthread_run(wdelete, NULL, "wdelete");
 	wdelete(NULL);
 	ktime_get_real_ts64(&spclock[1]);
 	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
@@ -176,9 +176,9 @@ void test(void)
 		res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
 		res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
 		printk("%lld ns\n", res_time);
-		spin_unlock(&counter_lock);
 	}
 	*/
+	spin_unlock(&counter_lock);
 
 }
 
