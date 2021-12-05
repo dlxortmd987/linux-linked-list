@@ -48,6 +48,10 @@ int __init mod_init(void){
 }
 
 void __exit mod_cleanup(void) {
+	int i;
+	for (i = 0; i < 4; i++) {
+		kthread_stop(writer_thread[i])
+	}
 	printk("bye module \n");
 }
 
@@ -115,21 +119,21 @@ void test(void)
 		spin_lock(&counter_lock);
 		res_time = 0;
 		ktime_get_real_ts64(&spclock[0]);
-		writer_thread[i] = kthread_run(winsert, NULL, "test_insert_and_search");
+		writer_thread[i] = kthread_run(winsert, NULL, "winsert");
 		ktime_get_real_ts64(&spclock[1]);
 		res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
 		res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
 		printk("%lld ns\n", res_time);
 
 		ktime_get_real_ts64(&spclock[0]);
-		writer_thread[i] = kthread_run(wsearch, NULL, "test_insert_and_search");
+		writer_thread[i] = kthread_run(wsearch, NULL, "wsearch");
 		ktime_get_real_ts64(&spclock[1]);
 		res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
 		res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
 		printk("%lld ns\n", res_time);
 
 		ktime_get_real_ts64(&spclock[0]);
-		writer_thread[i] = kthread_run(wdelete, NULL, "test_insert_and_search");
+		writer_thread[i] = kthread_run(wdelete, NULL, "wdelete");
 		ktime_get_real_ts64(&spclock[1]);
 		res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
 		res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);

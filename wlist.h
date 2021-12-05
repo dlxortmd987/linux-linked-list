@@ -21,7 +21,6 @@ static inline void INIT_WLIST_HEAD(struct wlist_head * wlist){
 static inline void wlist_add(struct wlist_head *new, struct wlist_head *whead)
 {
     // flag true false 인지 확인
-    
     // true -> msleep
     while (whead->flag | (container_of(whead->head.next, struct wlist_head, head))->flag) {
     	printk("stuck\n");
