@@ -14,7 +14,7 @@
 spinlock_t counter_lock;
 struct timespec64 spclock[2];
 
-#define COUNT 10000 // node 100 개
+#define COUNT 3000 // node 100 개
 
 unsigned long long res_time;
 
