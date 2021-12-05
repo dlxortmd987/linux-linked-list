@@ -9,7 +9,7 @@
 #include "wlist.h"
 
 
-#define COUNT 10 // node 100 개
+#define COUNT 1000 // node 100 개
 int test_insert_and_search(void* data);
 void test_delete(void);
 
