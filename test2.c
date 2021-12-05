@@ -88,7 +88,7 @@ int wsearch(void* data)
 				wlist_add(&new->whead, &(cnode->whead));
 			}
 		}
-		return 0;
+		
 	}	
 	ssleep(1);
 	// 잘 삽입되었는지 확인
@@ -103,6 +103,7 @@ int wsearch(void* data)
 
 int wdelete(void* data){
 	
+
 	list_for_each_entry_safe(current_node, tmp, &(my_list.head), head){
 		cnode = container_of(current_node, struct my_node, whead);
 		if(cnode->data == 2){
@@ -120,7 +121,6 @@ void test(void)
 	res_time = 0;
 	
 	int i;
-	spin_lock(&counter_lock);
 	res_time = 0;
 	
 	//insert
@@ -132,7 +132,7 @@ void test(void)
 	ktime_get_real_ts64(&spclock[1]);
 	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
 	res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
-	printk("%lld ns\n", res_time);
+	printk("insert %lld ns\n", res_time);
 	
 	//search
 	ktime_get_real_ts64(&spclock[0]);
@@ -144,7 +144,7 @@ void test(void)
 	ktime_get_real_ts64(&spclock[1]);
 	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
 	res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
-	printk("%lld ns\n", res_time);
+	printk("search %lld ns\n", res_time);
 	
 	
 	//delete
@@ -156,7 +156,7 @@ void test(void)
 	ktime_get_real_ts64(&spclock[1]);
 	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
 	res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
-	printk("%lld ns\n", res_time);
+	printk("delete %lld ns\n", res_time);
 
 /*
 	int i;
@@ -185,7 +185,6 @@ void test(void)
 		printk("%lld ns\n", res_time);
 	}
 	*/
-	spin_unlock(&counter_lock);
 
 }
 

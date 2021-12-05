@@ -59,6 +59,8 @@ MODULE_LICENSE("GPL");
 
 int winsert(void* data) 
 {
+	spin_lock(&counter_lock);
+
 	int i;
 
 	/*먼저 100개 노드를 insert해 둔다. */
@@ -67,12 +69,16 @@ int winsert(void* data)
 		new->data = i;
 		list_add(&new->list, &my_list);
 	}	
+	spin_unlock(&counter_lock);
+
 	return 0;
 }
 
 int wsearch(void* data)
 {
 	// search 
+	spin_lock(&counter_lock);
+
 	int i;
 	for (i = 0; i < COUNT; i++){
 		list_for_each_entry_safe(current_node,tmp, &my_list, list ){
@@ -83,7 +89,6 @@ int wsearch(void* data)
 				list_add(&new->list, &(current_node->list));
 			}
 		}
-		return 0;
 	}	
 	ssleep(1);
 	// 잘 삽입되었는지 확인
@@ -92,10 +97,13 @@ int wsearch(void* data)
 		// printk("current node-> data : %d \n", current_node->data);
 	
 	}
+	spin_unlock(&counter_lock);
+
 	return 0;
 }
 
 int wdelete(void* data){
+	spin_lock(&counter_lock);
 	
 	list_for_each_entry_safe(current_node, tmp, &my_list, list){
 		if (current_node->data == 2){
@@ -104,6 +112,7 @@ int wdelete(void* data){
 			kfree(current_node);
 		}
 	}
+	spin_unlock(&counter_lock);
 	
 	return 0;
 }
@@ -113,7 +122,6 @@ void test(void)
 	res_time = 0;
 	
 	int i;
-	spin_lock(&counter_lock);
 	res_time = 0;
 	
 	//insert
@@ -121,11 +129,12 @@ void test(void)
 	writer_thread1 = kthread_run(winsert, NULL, "winsert");
 	writer_thread2 = kthread_run(winsert, NULL, "winsert");
 	writer_thread3 = kthread_run(winsert, NULL, "winsert");
+
 	winsert(NULL);
 	ktime_get_real_ts64(&spclock[1]);
 	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
 	res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
-	printk("%lld ns\n", res_time);
+	printk("insert %lld ns\n", res_time);
 	
 	//search
 	ktime_get_real_ts64(&spclock[0]);
@@ -137,7 +146,7 @@ void test(void)
 	ktime_get_real_ts64(&spclock[1]);
 	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
 	res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
-	printk("%lld ns\n", res_time);
+	printk("select %lld ns\n", res_time);
 	
 	
 	//delete
@@ -149,7 +158,7 @@ void test(void)
 	ktime_get_real_ts64(&spclock[1]);
 	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
 	res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
-	printk("%lld ns\n", res_time);
+	printk("delete %lld ns\n", res_time);
 
 /*
 	int i;
@@ -178,7 +187,6 @@ void test(void)
 		printk("%lld ns\n", res_time);
 	}
 	*/
-	spin_unlock(&counter_lock);
 
 }
 
