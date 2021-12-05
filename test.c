@@ -19,7 +19,7 @@ struct timespec64 spclock[2];
 unsigned long long res_time;
 
 // struct task_struct* writer_thread1, * writer_thread2, * writer_thread3, * writer_thread4;
-typedef struct tast_struct* writer_thread[4];
+struct tast_struct* writer_thread[4];
 
 struct my_node {
 	struct list_head list;
@@ -108,11 +108,11 @@ int wdelete(void* data){
 void test(void) 
 {
 	res_time = 0;
-	spin_lock(&counter_lock);
 	
 
 	int i;
 	for(i = 0; i < 4; i++) {
+		spin_lock(&counter_lock);
 		res_time = 0;
 		ktime_get_real_ts64(&spclock[0]);
 		writer_thread[i] = kthread_run(winsert, NULL, "test_insert_and_search");
@@ -134,9 +134,9 @@ void test(void)
 		res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
 		res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
 		printk("%lld ns\n", res_time);
+		spin_unlock(&counter_lock);
 	}
 
-	spin_unlock(&counter_lock);
 }
 
 unsigned long long calclock3(struct timespec64 *spclock, unsigned long long *total_time){
