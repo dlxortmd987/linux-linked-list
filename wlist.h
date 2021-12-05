@@ -40,7 +40,19 @@ static inline void wlist_add(struct wlist_head *new, struct wlist_head *whead)
 //delete
 static inline void wlist_del(struct wlist_head *entry)
 {
+    // flag 확인 (현재 노드(entry), 다음 노드, 이전 노드)
+    // true
+    while (entry->flag | (container_of(entry->head.next, struct wlist_head, head))->flag | (container_of(entry->head.prev, struct wlist_head, head))->flag) {
+    	printk("stuck\n");
+        msleep(10);
+    }
+    // false
+    entry->flag = true;
+    (container_of(entry->head.next, struct wlist_head, head))->flag = true;
+    (container_of(entry->head.prev, struct wlist_head, head))->flag = true;
     __list_del_entry(&(entry->head));
+    (container_of(entry->head.next, struct wlist_head, head))->flag = false;
+    (container_of(entry->head.prev, struct wlist_head, head))->flag = false;
 	entry->head.next = WLIST_POISON1;
 	entry->head.prev = WLIST_POISON2;
 }

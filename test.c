@@ -14,9 +14,10 @@
 spinlock_t counter_lock;
 struct timespec64 spclock[2];
 
-#define COUNT 3000 // node 100 개
+#define COUNT 1000 // node 100 개
 
 unsigned long long res_time;
+int cnt = 1;
 
 struct task_struct* writer_thread1, * writer_thread2, * writer_thread3, * writer_thread4;
 // struct tast_struct* writer_thread[4];
@@ -105,17 +106,17 @@ int wsearch(void* data)
 
 int wdelete(void* data){
 	spin_lock(&counter_lock);
-	int new_COUNT = COUNT+1000;
-	int i;
-	for (i = 1000; i < new_COUNT; i++){
+	// int new_COUNT = COUNT+1000;
+	// int i;
+	// for (i = 1000; i < new_COUNT; i++){
 		list_for_each_entry_safe(current_node, tmp, &my_list, list){
-			if (current_node->data == i){
+			if (current_node->data == cnt){
 				// printk("current node value :%d \n", current_node->data);
 				list_del(&current_node->list);
 				kfree(current_node);
 			}
 		}
-	}
+	// }
 	spin_unlock(&counter_lock);
 	
 	return 0;
