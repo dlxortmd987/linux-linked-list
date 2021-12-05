@@ -23,16 +23,18 @@ static inline void wlist_add(struct wlist_head *new, struct wlist_head *whead)
     // flag true false 인지 확인
     
     // true -> msleep
-    while (whead->flag || (container_of(whead->head.next, struct wlist_head, head))->flag) {
+    while (whead->flag | (container_of(whead->head.next, struct wlist_head, head))->flag) {
+    	printk("stuck\n");
         msleep(10);
     }
+    printk("no stuck\n");
     // false -> 그대로 진행
     // flag 달기 (next, new, prev)
     whead->flag = true;
     (container_of(whead->head.next, struct wlist_head, head))->flag = true;
     list_add(&(new->head), &(whead->head));
     whead->flag = false;
-    (container_of(whead->head.next, struct wlist_head, head))->flag = false;
+    (container_of(new->head.next, struct wlist_head, head))->flag = false;
     
 }
 
