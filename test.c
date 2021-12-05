@@ -113,7 +113,45 @@ void test(void)
 {
 	res_time = 0;
 	
+	int i;
+	spin_lock(&counter_lock);
+	res_time = 0;
+	
+	//insert
+	ktime_get_real_ts64(&spclock[0]);
+	for(i=0; i<3;i++){
+		writer_thread[i] = kthread_run(winsert, NULL, "winsert");
+	}
+	winsert(NULL);
+	ktime_get_real_ts64(&spclock[1]);
+	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
+	res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
+	printk("%lld ns\n", res_time);
+	
+	//search
+	ktime_get_real_ts64(&spclock[0]);
+	for(i=0; i<3;i++){
+		writer_thread[i] = kthread_run(wsearch, NULL, "winsert");
+	}
+	wsearch(NULL);
+	ktime_get_real_ts64(&spclock[1]);
+	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
+	res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
+	printk("%lld ns\n", res_time);
+	
+	
+	//delete
+	ktime_get_real_ts64(&spclock[0]);
+	for(i=0; i<3;i++){
+		writer_thread[i] = kthread_run(wdelete, NULL, "winsert");
+	}
+	wdelete(NULL);
+	ktime_get_real_ts64(&spclock[1]);
+	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
+	res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
+	printk("%lld ns\n", res_time);
 
+/*
 	int i;
 	for(i = 0; i < 4; i++) {
 		spin_lock(&counter_lock);
@@ -140,6 +178,7 @@ void test(void)
 		printk("%lld ns\n", res_time);
 		spin_unlock(&counter_lock);
 	}
+	*/
 
 }
 
