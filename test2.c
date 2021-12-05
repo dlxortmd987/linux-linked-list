@@ -21,8 +21,9 @@ struct my_node {
 };
 
 struct wlist_head my_list; //head
-struct my_node *current_node = NULL;
-struct my_node *tmp = NULL;
+struct my_node * cnode = NULL;
+struct wlist_head *current_node = NULL;
+struct wlist_head *tmp = NULL;
 
 int __init mod_init(void){
 	INIT_WLIST_HEAD(&my_list); // initialize list head
@@ -56,33 +57,19 @@ int test_insert_and_search(void* data)
 	
 	int i;
 	for (i = 0; i < COUNT; i++){
-		wlist_for_each_entry_safe(current_node,tmp, &my_list, head ){
-			if(current_node->data == i){
-				//printk("current node->data: %d \n", current_node->data);
+		list_for_each_entry_safe(current_node,tmp, &(my_list.head), head ){
+			cnode = container_of(current_node, struct my_node, whead);
+			if(cnode->data == i){
+				printk("current node->data: %d \n", cnode->data);
 				struct my_node *new = kmalloc(sizeof(struct my_node), GFP_KERNEL);
-				new->data = i*1000;
-				wlist_add(&new->whead, &(current_node->whead));
+				new->data = i+1000;
+				wlist_add(&new->whead, &(cnode->whead));
 			}
 		}
 	}	
 	ssleep(1);
-	// 잘 삽입되었는지 확인000000000000000000000000000000
-	printk("================result=================\n");
-	wlist_for_each_entry_safe(current_node, tmp, &my_list, head){
-		printk("current node-> data : %d \n", current_node->data);
-	
-	}
+	// 잘 삽입되었는지 확인
+
 	return 0;
 }
 
-void test_delete(void){
-	
-	wlist_for_each_entry_safe(current_node, tmp, &my_list, head){
-		if (current_node->data == 2){
-			printk("current node value :%d \n", current_node->data);
-			wlist_del(&current_node->whead);
-			kfree(current_node);
-		}
-	}
-	
-}
