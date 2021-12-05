@@ -69,7 +69,11 @@ int test_insert_and_search(void* data)
 	}	
 	ssleep(1);
 	// 잘 삽입되었는지 확인
-
+	
+	list_for_each_entry_safe(current_node, tmp, &(my_list.head), head){
+		cnode = container_of(current_node, struct my_node, whead);
+		printk("current node->data: %d \n", cnode->data);
+	}
 	return 0;
 }
 
