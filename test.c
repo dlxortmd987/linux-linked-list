@@ -85,18 +85,19 @@ int wsearch(void* data)
 			if(current_node->data == i){
 				//printk("current node->data: %d \n", current_node->data);
 				struct my_node *new = kmalloc(sizeof(struct my_node), GFP_KERNEL);
-				new->data = i*1000;
+				new->data = i+1000;
 				list_add(&new->list, &(current_node->list));
 			}
 		}
 	}	
+	/*
 	ssleep(1);
 	// 잘 삽입되었는지 확인
 	printk("================result=================\n");
 	list_for_each_entry_safe(current_node, tmp, &my_list, list){
 		// printk("current node-> data : %d \n", current_node->data);
 	
-	}
+	} */
 	spin_unlock(&counter_lock);
 
 	return 0;
@@ -104,12 +105,15 @@ int wsearch(void* data)
 
 int wdelete(void* data){
 	spin_lock(&counter_lock);
-	
-	list_for_each_entry_safe(current_node, tmp, &my_list, list){
-		if (current_node->data == 2){
-			// printk("current node value :%d \n", current_node->data);
-			list_del(&current_node->list);
-			kfree(current_node);
+	int new_COUNT = COUNT+1000;
+	int i;
+	for (i = 1000; i < new_COUNT; i++){
+		list_for_each_entry_safe(current_node, tmp, &my_list, list){
+			if (current_node->data == i){
+				// printk("current node value :%d \n", current_node->data);
+				list_del(&current_node->list);
+				kfree(current_node);
+			}
 		}
 	}
 	spin_unlock(&counter_lock);

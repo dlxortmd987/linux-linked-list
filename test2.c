@@ -84,12 +84,13 @@ int wsearch(void* data)
 			if(cnode->data == i){
 				//printk("current node->data: %d \n", current_node->data);
 				struct my_node *new = kmalloc(sizeof(struct my_node), GFP_KERNEL);
-				new->data = i*1000;
+				new->data = i+1000;
 				wlist_add(&new->whead, &(cnode->whead));
 			}
 		}
 		
 	}	
+	/*
 	ssleep(1);
 	// 잘 삽입되었는지 확인
 	printk("================result=================\n");
@@ -97,19 +98,22 @@ int wsearch(void* data)
 		cnode = container_of(current_node, struct my_node, whead);
 		// printk("current node-> data : %d \n", current_node->data);
 	
-	}
+	}*/
 	return 0;
 }
 
 int wdelete(void* data){
 	
-
-	list_for_each_entry_safe(current_node, tmp, &(my_list.head), head){
-		cnode = container_of(current_node, struct my_node, whead);
-		if(cnode->data == 2){
-			// printk("current node value :%d \n", current_node->data);
-			list_del(&current_node->head);
-			kfree(current_node);
+	int new_COUNT = COUNT+1000;
+	int i;
+	for (i = 1000; i < new_COUNT; i++){
+		list_for_each_entry_safe(current_node, tmp, &(my_list.head), head){
+			cnode = container_of(current_node, struct my_node, whead);
+			if(cnode->data == i){
+				// printk("current node value :%d \n", current_node->data);
+				list_del(&current_node->head);
+				kfree(current_node);
+			}
 		}
 	}
 	
