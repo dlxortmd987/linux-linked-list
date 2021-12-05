@@ -23,8 +23,7 @@ static inline void wlist_add(struct wlist_head *new, struct wlist_head *whead)
     // flag true false 인지 확인
     // true -> msleep
     while (whead->flag | (container_of(whead->head.next, struct wlist_head, head))->flag) {
-    	printk("stuck\n");
-        msleep(10);
+        msleep(1);
     }
     //printk("no stuck\n");
     // false -> 그대로 진행
@@ -43,8 +42,7 @@ static inline void wlist_del(struct wlist_head *entry)
     // flag 확인 (현재 노드(entry), 다음 노드, 이전 노드)
     // true
     while (entry->flag | (container_of(entry->head.next, struct wlist_head, head))->flag | (container_of(entry->head.prev, struct wlist_head, head))->flag) {
-    	printk("stuck\n");
-        msleep(10);
+        msleep(1);
     }
     // false
     entry->flag = true;
@@ -57,32 +55,3 @@ static inline void wlist_del(struct wlist_head *entry)
 	entry->head.prev = WLIST_POISON2;
 }
 
-
-
-// #define list_for_each_entry_safe(pos, n, head, member)			\
-// 	for (pos = list_first_entry(head, typeof(*pos), member),	\
-// 		n = list_next_entry(pos, member);			\
-// 	     !list_entry_is_head(pos, head, member); 			\
-// 	     pos = n, n = list_next_entry(n, member))
-
-//search
-// whead_ptr: wlist_head *
-
-/*
-
-#define wlist_for_each_entry_safe(pos, n, whead_ptr, member)    \
-    for (pos = container_of(list_first_entry((whead_ptr)->head, typeof((pos)->whead), member), typeof(pos), whead_ptr), \
-            n = container_of(list_next_entry((pos)->whead, member), typeof(n), whead_ptr);			\
-            !list_entry_is_head(pos->whead, (whead_ptr)->head, member); 			\
-            pos = n, n = container_of(list_next_entry(n->whead, member), typeof(n), whead_ptr))
-            
-
-
-
-#define wlist_for_each_entry_safe(pos, n, whead_ptr, member)\
-	for(pos = container_of(list_first_entry(whead_ptr, typeof(&((pos)->whead)), member),typeof(*pos),whead), \
-	 n = container_of(list_next_entry(&((pos)->whead), member), typeof(*n), whead) ; \
-	 !list_entry_is_head(&((pos)->whead), whead_ptr, member); \
-	 pos = n, n = container_of(list_next_entry(&((pos)->whead), member), typeof(*n), whead))
-
-*/
