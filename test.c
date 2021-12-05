@@ -14,7 +14,7 @@
 spinlock_t counter_lock;
 struct timespec64 spclock[2];
 
-#define COUNT 100 // the number of nodes
+#define COUNT 120 // the number of nodes
 
 unsigned long long res_time;
 int cnt = 1;
@@ -63,6 +63,7 @@ int winsert(void* data)
 		struct my_node *new = kmalloc(sizeof(struct my_node),GFP_KERNEL);
 		new->data = i;
 		list_add(&new->list, &my_list);
+		msleep(1);
 	}	
 	spin_unlock(&counter_lock);
 
@@ -82,6 +83,7 @@ int wsearch(void* data)
 				list_add(&new->list, &(current_node->list));
 			}
 		}
+		msleep(1);
 	}	
 	spin_unlock(&counter_lock);
 
@@ -115,6 +117,9 @@ void test(void)
 	writer_thread3 = kthread_run(winsert, NULL, "winsert");
 
 	winsert(NULL);
+	kthread_stop(writer_thread1);
+	kthread_stop(writer_thread2);
+	kthread_stop(writer_thread3);
 	ktime_get_real_ts64(&spclock[1]);
 	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
 	res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
@@ -127,6 +132,9 @@ void test(void)
 	writer_thread2 = kthread_run(wsearch, NULL, "wsearch");
 	writer_thread3 = kthread_run(wsearch, NULL, "wsearch");
 	wsearch(NULL);
+	kthread_stop(writer_thread1);
+	kthread_stop(writer_thread2);
+	kthread_stop(writer_thread3);
 	ktime_get_real_ts64(&spclock[1]);
 	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
 	res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
@@ -139,6 +147,9 @@ void test(void)
 	writer_thread2 = kthread_run(wdelete, NULL, "wdelete");
 	writer_thread3 = kthread_run(wdelete, NULL, "wdelete");
 	wdelete(NULL);
+	kthread_stop(writer_thread1);
+	kthread_stop(writer_thread2);
+	kthread_stop(writer_thread3);
 	ktime_get_real_ts64(&spclock[1]);
 	res_time = (spclock[1].tv_sec - spclock[0].tv_sec) * BILLION;
 	res_time += (spclock[1].tv_nsec - spclock[0].tv_nsec);
