@@ -29,10 +29,7 @@ static inline void wlist_del(struct wlist_head *entry)
 	entry->head.prev = WLIST_POISON2;
 }
 
-#define offsetof(s,m)   (size_t)&(((s *)0)->m)
 
-#define container_of(ptr, type, member) \
-  ((type *) ((char *) (ptr) - offsetof(type, member)))
 
 // #define list_for_each_entry_safe(pos, n, head, member)			\
 // 	for (pos = list_first_entry(head, typeof(*pos), member),	\
@@ -42,8 +39,22 @@ static inline void wlist_del(struct wlist_head *entry)
 
 //search
 // whead_ptr: wlist_head *
+
+/*
+
 #define wlist_for_each_entry_safe(pos, n, whead_ptr, member)    \
-    for (pos = container_of(list_first_entry((whead_ptr)->head, typeof((pos)->whead), member), typeof(*pos), whead_ptr), \
-            n = container_of(list_next_entry((pos)->whead, member), typeof(*n), whead_ptr);			\
+    for (pos = container_of(list_first_entry((whead_ptr)->head, typeof((pos)->whead), member), typeof(pos), whead_ptr), \
+            n = container_of(list_next_entry((pos)->whead, member), typeof(n), whead_ptr);			\
             !list_entry_is_head(pos->whead, (whead_ptr)->head, member); 			\
-            pos = n, n = container_of(list_next_entry(n->whead, member), typeof(*n), whead_ptr))
+            pos = n, n = container_of(list_next_entry(n->whead, member), typeof(n), whead_ptr))
+            
+
+
+
+#define wlist_for_each_entry_safe(pos, n, whead_ptr, member)\
+	for(pos = container_of(list_first_entry(whead_ptr, typeof(&((pos)->whead)), member),typeof(*pos),whead), \
+	 n = container_of(list_next_entry(&((pos)->whead), member), typeof(*n), whead) ; \
+	 !list_entry_is_head(&((pos)->whead), whead_ptr, member); \
+	 pos = n, n = container_of(list_next_entry(&((pos)->whead), member), typeof(*n), whead))
+
+*/
