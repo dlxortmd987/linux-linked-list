@@ -1,4 +1,4 @@
-obj-m := test2.o
+obj-m := test.o
 
 KERNEL_DIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)

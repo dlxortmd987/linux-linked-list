@@ -21,9 +21,8 @@ static inline void INIT_WLIST_HEAD(struct wlist_head * wlist){
 static inline void wlist_add(struct wlist_head *new, struct wlist_head *whead)
 {
     // flag true false 인지 확인
-    
     // true -> msleep
-    while (whead->flag || (container_of(whead->head.next, struct wlist_head, head))->flag) {
+    while (whead->flag | (container_of(whead->head.next, struct wlist_head, head))->flag) {
         msleep(10);
     }
     // false -> 그대로 진행
@@ -32,8 +31,7 @@ static inline void wlist_add(struct wlist_head *new, struct wlist_head *whead)
     (container_of(whead->head.next, struct wlist_head, head))->flag = true;
     list_add(&(new->head), &(whead->head));
     whead->flag = false;
-    (container_of(whead->head.next, struct wlist_head, head))->flag = false;
-    
+    (container_of(new->head.next, struct wlist_head, head))->flag = false;
 }
 
 //delete
