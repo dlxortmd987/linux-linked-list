@@ -48,6 +48,10 @@ int __init mod_init(void){
 }
 
 void __exit mod_cleanup(void) {
+	int i;
+	for (i = 0; i < 4; i++) {
+		kthread_stop(writer_thread[i])
+	}
 	printk("bye module \n");
 }
 
