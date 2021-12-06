@@ -1,4 +1,9 @@
-// test code
+/*** test code of our modified kernel linked list ***
+It uses alternative data structure node with boolean member 'flag'.
+So each threads can access the list at the same time.
+However, since the 'flag' is checked, the processing for each node is atomic.
+*/
+
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/list.h> // list.h
@@ -22,7 +27,7 @@ struct timespec64 spclock[2];
 unsigned long long res_time;
 int cnt = 1;
 
-struct task_struct* writer_thread1, * writer_thread2, * writer_thread3, * writer_thread4;
+struct task_struct* writer_thread1, * writer_thread2, * writer_thread3;
 
 struct my_node {
 	struct wlist_head whead;
@@ -58,7 +63,7 @@ module_exit(mod_cleanup);
 MODULE_LICENSE("GPL");
 
 
-int winsert(void* data) 
+int winsert(void* data)  // insert nodes to list
 {
 	int i;
 
@@ -71,8 +76,7 @@ int winsert(void* data)
 	return 0;
 }
 
-//travarsal and insert
-int wsearch(void* data)
+int wsearch(void* data) // search & insert nodes to list (***NOT ONLY SEARCH***)
 {
 	int i;
 	for (i = 0; i < COUNT; i++){
@@ -89,7 +93,7 @@ int wsearch(void* data)
 	return 0;
 }
 
-int wdelete(void* data){
+int wdelete(void* data){ // delete 1 node
 	
 	list_for_each_entry_safe(current_node, tmp, &(my_list.head), head){
 		cnode = container_of(current_node, struct my_node, whead);
@@ -102,7 +106,7 @@ int wdelete(void* data){
 	return 0;
 }
 
-void test(void) 
+void test(void)   // distributes jobs to 3 threads + 1 main process = 4 threads work
 {
 	res_time = 0;
 	

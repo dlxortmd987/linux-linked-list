@@ -2,14 +2,16 @@
 #include <linux/slab.h>
 #include <linux/delay.h>
 
+// dead pointer
 #define WLIST_POISON1   ((void*) 0x00100100)
 #define WLIST_POISON2   ((void*) 0x00200200)
 
+
+// new struct with flag - each functions checks flag for atomic operation.
 struct wlist_head {
     struct list_head head;
     bool flag;
 };
-
 
 static inline void INIT_WLIST_HEAD(struct wlist_head * wlist){
     INIT_LIST_HEAD(&(wlist->head));

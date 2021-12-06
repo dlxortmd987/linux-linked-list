@@ -1,4 +1,7 @@
-// test code
+/*** test code of kernel linked list with spinlock ***
+lock the list before job, and unlock after job.
+so more than one thread cannot access the list. */
+
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/list.h> // list.h
@@ -19,7 +22,7 @@ struct timespec64 spclock[2];
 unsigned long long res_time;
 int cnt = 1;
 
-struct task_struct* writer_thread1, * writer_thread2, * writer_thread3, * writer_thread4;
+struct task_struct* writer_thread1, * writer_thread2, * writer_thread3;
 
 struct my_node {
 	struct list_head list;
@@ -53,7 +56,7 @@ module_exit(mod_cleanup);
 MODULE_LICENSE("GPL");
 
 
-int winsert(void* data) 
+int winsert(void* data) // insert nodes to list
 {
 	spin_lock(&counter_lock);
 
@@ -70,7 +73,7 @@ int winsert(void* data)
 	return 0;
 }
 
-int wsearch(void* data)
+int wsearch(void* data) // search & insert nodes to list (***NOT ONLY SEARCH***)
 {
 	spin_lock(&counter_lock);
 
@@ -90,10 +93,10 @@ int wsearch(void* data)
 	return 0;
 }
 
-int wdelete(void* data){
+int wdelete(void* data){ // delete 1 node
 	spin_lock(&counter_lock);
 	list_for_each_entry_safe(current_node, tmp, &my_list, list){
-		if (current_node->data == cnt){
+		if (current_node->data == cnt++){
 			list_del(&current_node->list);
 			kfree(current_node);
 		}
@@ -103,7 +106,7 @@ int wdelete(void* data){
 	return 0;
 }
 
-void test(void) 
+void test(void) // distributes jobs to 3 threads + 1 main process = 4 threads work
 {
 	res_time = 0;
 	
